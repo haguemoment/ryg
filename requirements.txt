@@ -1,0 +1,4 @@
+requests
+wordfreq
+python-dotenv
+flask
