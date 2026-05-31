@@ -2,7 +2,7 @@ import random
 from flask import Flask, jsonify, render_template
 from randomizer import random_language_search, random_filename_search
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='.')
 
 
 @app.route("/")
