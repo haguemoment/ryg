@@ -79,58 +79,58 @@
 
     @media (max-width: 600px) {
       #top { flex-direction: column; }
-      #btn-wrap { flex-direction: row; padding: 16px; min-width: unset; }
-      #player-wrap { width: 100%; }
+      #btn-wrap { flex-direction: row; padding: 16px; min-width: unset; justify-content: center; }
+      #player-wrap { width: 100%; aspect-ratio: 16 / 9; }
     }
 
-    .footer {
-      margin-top: 20px;
-      margin-bottom: 48px;
+    .header {
+      width: 100%;
+      padding: 32px 4vw 24px;
       text-align: center;
-      padding: 0 24px;
     }
 
-    .footer h1 {
-      font-size: 1.4rem;
+    .header h1 {
+      font-size: clamp(1.2rem, 3vw, 2rem);
       font-weight: normal;
       letter-spacing: 0.04em;
     }
 
-    .footer .tagline {
+    .header .tagline {
       margin-top: 4px;
-      font-size: 0.9rem;
+      font-size: clamp(0.8rem, 1.8vw, 1rem);
       color: #888;
       font-style: italic;
     }
 
-    .footer .blurb {
-      margin-top: 16px;
-      max-width: 560px;
-      font-size: 0.88rem;
+    .header .blurb {
+      margin-top: 12px;
+      font-size: clamp(0.8rem, 1.5vw, 0.95rem);
       color: #888;
       line-height: 1.7;
+      max-width: 90%;
+      margin-left: auto;
+      margin-right: auto;
     }
   </style>
 </head>
 <body>
 
-  <div id="top">
-    <div id="btn-wrap">
-      <button id="randomize-btn">RANDOMIZE</button>
-      <div id="status"></div>
-    </div>
-    <div id="player-wrap">
-      <span id="placeholder">press randomize</span>
-    </div>
-  </div>
-
-  <div class="footer">
+  <div class="header">
     <h1>Random Youtube Generator</h1>
     <div class="tagline">the internet, as it should be.</div>
     <p class="blurb">
       Somewhere out there, someone is uploading a video right now that the algorithm will never show you because it doesn't think you would like it. Maybe the video is too different than what you normally watch, or it's in a foreign language, or it's not very polished. But it's wrong, you would love it. This site is the internet, unfiltered. No echo chambers, no bubbles, no doomscrollable threads to pull. Just raw, honest, beautiful humans. Hit RANDOMIZE and enjoy what the real internet has to offer.
-
     </p>
+  </div>
+
+  <div id="top">
+    <div id="player-wrap">
+      <span id="placeholder">press randomize</span>
+    </div>
+    <div id="btn-wrap">
+      <button id="randomize-btn">RANDOMIZE</button>
+      <div id="status"></div>
+    </div>
   </div>
 
   <script>
