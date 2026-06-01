@@ -12,11 +12,14 @@ def index():
 
 @app.route("/api/random")
 def get_random_video():
-    url = random_language_search() if random.random() < 0.75 else random_filename_search()
-    if not url:
-        return jsonify({"error": "No video found"}), 500
-    video_id = url.split("v=")[1]
-    return jsonify({"video_id": video_id})
+    try:
+        url = random_language_search() if random.random() < 0.75 else random_filename_search()
+        if not url:
+            return jsonify({"error": "No video found"}), 500
+        video_id = url.split("v=")[1]
+        return jsonify({"video_id": video_id})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 if __name__ == "__main__":
