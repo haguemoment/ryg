@@ -1,6 +1,8 @@
+import os
 import random
+import requests
 from flask import Flask, jsonify, render_template
-from randomizer import random_language_search, random_filename_search
+from randomizer import random_language_search, random_filename_search, YOUTUBE_API_KEY, YOUTUBE_SEARCH_URL
 
 app = Flask(__name__, template_folder='.')
 
@@ -8,6 +10,16 @@ app = Flask(__name__, template_folder='.')
 @app.route("/")
 def index():
     return render_template("index.html")
+
+
+@app.route("/api/debug")
+def debug():
+    key = YOUTUBE_API_KEY
+    r = requests.get(YOUTUBE_SEARCH_URL, params={
+        "part": "snippet", "q": "hello", "type": "video",
+        "maxResults": 1, "key": key
+    }, timeout=10)
+    return jsonify({"key_present": bool(key), "yt_status": r.status_code, "yt_response": r.json()})
 
 
 @app.route("/api/random")
