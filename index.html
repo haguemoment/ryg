@@ -7,40 +7,77 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+    html {
+      scroll-snap-type: y mandatory;
+      overflow-y: scroll;
+      height: 100%;
+    }
+
     body {
       background: #f5f5f0;
       color: #222;
       font-family: 'Georgia', serif;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
     }
 
-    #top {
-      display: flex;
-      flex-direction: row;
-      width: 100%;
-      align-items: stretch;
+    section {
+      height: 100vh;
+      scroll-snap-align: start;
     }
 
-    #btn-wrap {
+    /* ── Description ── */
+    #description {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 10px;
-      padding: 24px;
-      min-width: 160px;
+      text-align: center;
+      padding: 48px 8vw;
+      gap: 12px;
+      position: relative;
+    }
+
+    #description h1 {
+      font-size: clamp(1.4rem, 4vw, 2.4rem);
+      font-weight: normal;
+      letter-spacing: 0.04em;
+    }
+
+    #description .tagline {
+      font-size: clamp(0.9rem, 2vw, 1.1rem);
+      color: #888;
+      font-style: italic;
+    }
+
+    #description .blurb {
+      margin-top: 8px;
+      font-size: clamp(0.85rem, 1.6vw, 1rem);
+      color: #666;
+      line-height: 1.8;
+      max-width: 80vw;
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 28px;
+      font-size: 0.75rem;
+      color: #bbb;
+      letter-spacing: 0.08em;
+    }
+
+    /* ── Player ── */
+    #player {
+      display: flex;
+      flex-direction: row;
+      align-items: stretch;
     }
 
     #player-wrap {
       flex: 1;
-      aspect-ratio: 16 / 9;
       background: #ddd;
       display: flex;
       align-items: center;
       justify-content: center;
+      overflow: hidden;
     }
 
     #player-wrap iframe {
@@ -56,9 +93,19 @@
       letter-spacing: 0.05em;
     }
 
+    #btn-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 24px;
+      min-width: 160px;
+    }
+
     #randomize-btn {
-      padding: 16px 32px;
-      font-size: 1.1rem;
+      padding: 16px 28px;
+      font-size: 1rem;
       letter-spacing: 0.1em;
       background: #222;
       color: #f5f5f0;
@@ -66,64 +113,37 @@
       border-radius: 2px;
       cursor: pointer;
       transition: background 0.15s;
+      font-family: 'Georgia', serif;
     }
 
     #randomize-btn:hover { background: #444; }
     #randomize-btn:disabled { background: #bbb; cursor: default; }
 
     #status {
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       color: #999;
       height: 1.2em;
-    }
-
-    @media (max-width: 600px) {
-      #top { flex-direction: column; }
-      #btn-wrap { flex-direction: row; padding: 16px; min-width: unset; justify-content: center; }
-      #player-wrap { width: 100%; aspect-ratio: 16 / 9; }
-    }
-
-    .header {
-      width: 100%;
-      padding: 32px 4vw 24px;
       text-align: center;
     }
 
-    .header h1 {
-      font-size: clamp(1.2rem, 3vw, 2rem);
-      font-weight: normal;
-      letter-spacing: 0.04em;
-    }
-
-    .header .tagline {
-      margin-top: 4px;
-      font-size: clamp(0.8rem, 1.8vw, 1rem);
-      color: #888;
-      font-style: italic;
-    }
-
-    .header .blurb {
-      margin-top: 12px;
-      font-size: clamp(0.8rem, 1.5vw, 0.95rem);
-      color: #888;
-      line-height: 1.7;
-      max-width: 90%;
-      margin-left: auto;
-      margin-right: auto;
+    @media (max-width: 560px) {
+      #player { flex-direction: column; }
+      #btn-wrap { flex-direction: row; min-width: unset; padding: 16px; justify-content: center; }
     }
   </style>
 </head>
 <body>
 
-  <div class="header">
+  <section id="description">
     <h1>Random Youtube Generator</h1>
     <div class="tagline">the internet, as it should be.</div>
     <p class="blurb">
-      Somewhere out there, someone is uploading a video right now that the algorithm will never show you because it doesn't think you would like it. Maybe the video is too different than what you normally watch, or it's in a foreign language, or it's not very polished. But it's wrong, you would love it. This site is the internet, unfiltered. No echo chambers, no bubbles, no doomscrollable threads to pull. Just raw, honest, beautiful humans. Hit RANDOMIZE and enjoy what the real internet has to offer.
+      Somewhere out there, someone is uploading a video right now that the algorithm will never show you because it doesn't think you would like it. Maybe the video is too different than what you normally watch, or it's in a foreign language, or it's not very polished. But it's wrong — you would love it. This site is the internet, unfiltered. No echo chambers, no bubbles, no doomscrollable threads to pull. Just raw, honest, beautiful humans. Hit RANDOMIZE and enjoy what the real internet has to offer.
     </p>
-  </div>
+    <span class="scroll-hint">↓ scroll to play</span>
+  </section>
 
-  <div id="top">
+  <section id="player">
     <div id="player-wrap">
       <span id="placeholder">press randomize</span>
     </div>
@@ -131,7 +151,7 @@
       <button id="randomize-btn">RANDOMIZE</button>
       <div id="status"></div>
     </div>
-  </div>
+  </section>
 
   <script>
     const btn = document.getElementById('randomize-btn');
