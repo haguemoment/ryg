@@ -8,32 +8,19 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      background: #0f0f0f;
-      color: #e8e8e8;
+      background: #f5f5f0;
+      color: #222;
       font-family: 'Georgia', serif;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 48px 24px 80px;
-    }
-
-    h1 {
-      font-size: 2rem;
-      font-weight: normal;
-      letter-spacing: 0.04em;
-      margin-bottom: 36px;
-      color: #fff;
     }
 
     #player-wrap {
       width: 100%;
-      max-width: 860px;
       aspect-ratio: 16 / 9;
-      background: #1a1a1a;
-      border: 1px solid #2a2a2a;
-      border-radius: 4px;
-      overflow: hidden;
+      background: #ddd;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -43,52 +30,68 @@
       width: 100%;
       height: 100%;
       border: none;
+      display: block;
     }
 
     #placeholder {
-      color: #555;
-      font-size: 0.95rem;
+      color: #999;
+      font-size: 1rem;
       letter-spacing: 0.05em;
     }
 
     #randomize-btn {
-      margin-top: 28px;
-      padding: 14px 48px;
-      font-size: 1rem;
-      letter-spacing: 0.08em;
-      background: #fff;
-      color: #0f0f0f;
+      margin-top: 24px;
+      padding: 16px 64px;
+      font-size: 1.1rem;
+      letter-spacing: 0.1em;
+      background: #222;
+      color: #f5f5f0;
       border: none;
       border-radius: 2px;
       cursor: pointer;
-      transition: background 0.15s, color 0.15s;
+      transition: background 0.15s;
     }
 
-    #randomize-btn:hover { background: #e0e0e0; }
-    #randomize-btn:disabled { background: #444; color: #888; cursor: default; }
+    #randomize-btn:hover { background: #444; }
+    #randomize-btn:disabled { background: #bbb; cursor: default; }
 
     #status {
-      margin-top: 12px;
+      margin-top: 10px;
       font-size: 0.8rem;
-      color: #666;
+      color: #999;
       height: 1.2em;
+    }
+
+    .footer {
+      margin-top: 20px;
+      margin-bottom: 48px;
+      text-align: center;
+      padding: 0 24px;
+    }
+
+    .footer h1 {
+      font-size: 1.4rem;
+      font-weight: normal;
       letter-spacing: 0.04em;
     }
 
-    .manifesto {
-      margin-top: 56px;
-      max-width: 680px;
-      line-height: 1.8;
-      font-size: 0.97rem;
-      color: #aaa;
+    .footer .tagline {
+      margin-top: 4px;
+      font-size: 0.9rem;
+      color: #888;
+      font-style: italic;
     }
 
-    .manifesto p + p { margin-top: 1.4em; }
+    .footer .blurb {
+      margin-top: 16px;
+      max-width: 560px;
+      font-size: 0.88rem;
+      color: #888;
+      line-height: 1.7;
+    }
   </style>
 </head>
 <body>
-
-  <h1>Random Youtube Generator</h1>
 
   <div id="player-wrap">
     <span id="placeholder">press randomize</span>
@@ -97,12 +100,12 @@
   <button id="randomize-btn">RANDOMIZE</button>
   <div id="status"></div>
 
-  <div class="manifesto">
-    <p>
-      The internet promised us the world, and then quietly handed us a carefully curated corner of it. Every platform you use has learned you and built invisible walls around what you see to serve you a palatable and bite-sized piece of infinity. The algorithm isn't neutral. It's easy to just accept the uncanny comfort, but you can always feel the walls around you. This site is an attempt to knock a hole in them.
-    </p>
-    <p>
-      When a video surfaces from a part of the world you don't think about, filmed by someone who has never thought about you, that is the internet as it was always supposed to feel. Joyful and overwhelming and genuinely surprising. There are billions of people out here uploading disarmingly raw moments of their lives like weddings, job interviews, tutorials, disasters, moments from a context that can only be foreign and fleeting. Randomness is the only honest way to reach them. Hit the button enough times and you'll start to experience the internet the way it was supposed to be: human, real, and beautiful.
+  <div class="footer">
+    <h1>Random Youtube Generator</h1>
+    <div class="tagline">the internet, as it should be.</div>
+    <p class="blurb">
+      Somewhere out there, someone is uploading a video right now that the algorithm will never show you because it doesn't think you would like it. Maybe the video is too different than what you normally watch, or it's in a foreign language, or it's not very polished. But it's wrong, you would love it. This site is the internet, unfiltered. No echo chambers, no bubbles, no doomscrollable threads to pull. Just raw, honest, beautiful humans. Hit RANDOMIZE and enjoy what the real internet has to offer.
+
     </p>
   </div>
 
