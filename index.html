@@ -17,8 +17,25 @@
       align-items: center;
     }
 
-    #player-wrap {
+    #top {
+      display: flex;
+      flex-direction: row;
       width: 100%;
+      align-items: stretch;
+    }
+
+    #btn-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 24px;
+      min-width: 160px;
+    }
+
+    #player-wrap {
+      flex: 1;
       aspect-ratio: 16 / 9;
       background: #ddd;
       display: flex;
@@ -40,8 +57,7 @@
     }
 
     #randomize-btn {
-      margin-top: 24px;
-      padding: 16px 64px;
+      padding: 16px 32px;
       font-size: 1.1rem;
       letter-spacing: 0.1em;
       background: #222;
@@ -56,10 +72,15 @@
     #randomize-btn:disabled { background: #bbb; cursor: default; }
 
     #status {
-      margin-top: 10px;
       font-size: 0.8rem;
       color: #999;
       height: 1.2em;
+    }
+
+    @media (max-width: 600px) {
+      #top { flex-direction: column; }
+      #btn-wrap { flex-direction: row; padding: 16px; min-width: unset; }
+      #player-wrap { width: 100%; }
     }
 
     .footer {
@@ -93,12 +114,15 @@
 </head>
 <body>
 
-  <div id="player-wrap">
-    <span id="placeholder">press randomize</span>
+  <div id="top">
+    <div id="btn-wrap">
+      <button id="randomize-btn">RANDOMIZE</button>
+      <div id="status"></div>
+    </div>
+    <div id="player-wrap">
+      <span id="placeholder">press randomize</span>
+    </div>
   </div>
-
-  <button id="randomize-btn">RANDOMIZE</button>
-  <div id="status"></div>
 
   <div class="footer">
     <h1>Random Youtube Generator</h1>
