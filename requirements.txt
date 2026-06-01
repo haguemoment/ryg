@@ -2,3 +2,4 @@ requests
 wordfreq
 python-dotenv
 flask
+gunicorn
