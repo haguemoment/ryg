@@ -1,8 +1,8 @@
 import os
 import random
 import requests
-from flask import Flask, jsonify, render_template
-from randomizer import random_language_search, random_filename_search, YOUTUBE_API_KEY, YOUTUBE_SEARCH_URL
+from flask import Flask, jsonify, render_template, request
+from randomizer import random_language_search, random_filename_search, get_supported_languages, YOUTUBE_API_KEY, YOUTUBE_SEARCH_URL
 
 app = Flask(__name__, template_folder='.')
 
@@ -22,10 +22,16 @@ def debug():
     return jsonify({"key_present": bool(key), "yt_status": r.status_code, "yt_response": r.json()})
 
 
+@app.route("/api/languages")
+def languages():
+    return jsonify(get_supported_languages())
+
+
 @app.route("/api/random")
 def get_random_video():
     try:
-        url = random_language_search() if random.random() < 0.75 else random_filename_search()
+        lang = request.args.get("lang") or None
+        url = random_language_search(lang_code=lang) if random.random() < 0.75 else random_filename_search(lang_code=lang)
         if not url:
             return jsonify({"error": "No video found"}), 500
         video_id = url.split("v=")[1]

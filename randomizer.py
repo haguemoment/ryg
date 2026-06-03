@@ -120,13 +120,15 @@ REGION_CODES = [
 ]
 
 
-def _youtube_search(query, region_code=None):
+def _youtube_search(query, region_code=None, relevance_language=None):
     params = {
         "part": "snippet", "q": query, "type": "video",
         "maxResults": 5, "videoDuration": "medium", "key": YOUTUBE_API_KEY,
     }
     if region_code:
         params["regionCode"] = region_code
+    if relevance_language:
+        params["relevanceLanguage"] = relevance_language
     r = requests.get(YOUTUBE_SEARCH_URL, params=params, timeout=10)
     items = r.json().get("items", [])
     if not items:
@@ -138,24 +140,31 @@ def _youtube_search(query, region_code=None):
 
 # ── Public API ────────────────────────────────────────────────────────────────
 
-def random_language_search(retries=5):
+def get_supported_languages():
+    return [{"name": name, "code": code} for name, code, _ in SUPPORTED_LANGUAGES]
+
+
+def random_language_search(lang_code=None, retries=5):
     """Return a YouTube URL found via random words from a random language."""
+    pool = SUPPORTED_LANGUAGES
+    if lang_code:
+        pool = [l for l in SUPPORTED_LANGUAGES if l[1] == lang_code] or SUPPORTED_LANGUAGES
     for _ in range(retries):
-        lang = _pick_language()
-        lang_name, lang_code, _ = lang
+        lang = _weighted_choice(pool, lambda l: math.sqrt(max(l[2], 0.1))) if not lang_code else pool[0]
+        lang_name, code, _ = lang
         word_count = random.randint(2, 3)
-        words = _pick_words(lang_code, word_count)
+        words = _pick_words(code, word_count)
         if not words:
             continue
         query = " ".join(words)
-        print(f"[language] {lang_name} ({lang_code}) → '{query}'")
-        result = _youtube_search(query)
+        print(f"[language] {lang_name} ({code}) → '{query}'")
+        result = _youtube_search(query, relevance_language=code)
         if result:
             return result
     return None
 
 
-def random_filename_search(retries=5):
+def random_filename_search(lang_code=None, retries=5):
     """Return a YouTube URL found via a random default camera filename."""
     prefixes = ["IMG", "MOV", "VID", "DSC", "MVI", "CLIP", "FILE"]
     for _ in range(retries):
@@ -164,7 +173,7 @@ def random_filename_search(retries=5):
         query = f"{prefix}_{number:04d}"
         region = random.choice(REGION_CODES)
         print(f"[filename] query → '{query}' region={region}")
-        result = _youtube_search(query, region_code=region)
+        result = _youtube_search(query, region_code=region, relevance_language=lang_code)
         if result:
             return result
     return None

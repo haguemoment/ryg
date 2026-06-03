@@ -114,10 +114,23 @@
       cursor: pointer;
       transition: background 0.15s;
       font-family: 'Georgia', serif;
+      width: 100%;
     }
 
     #randomize-btn:hover { background: #444; }
     #randomize-btn:disabled { background: #bbb; cursor: default; }
+
+    #lang-select {
+      width: 100%;
+      padding: 8px 10px;
+      font-size: 0.85rem;
+      font-family: 'Georgia', serif;
+      background: #f5f5f0;
+      color: #222;
+      border: 1px solid #ccc;
+      border-radius: 2px;
+      cursor: pointer;
+    }
 
     #status {
       font-size: 0.78rem;
@@ -149,6 +162,7 @@
     </div>
     <div id="btn-wrap">
       <button id="randomize-btn">RANDOMIZE</button>
+      <select id="lang-select"><option value="">Language: Any</option></select>
       <div id="status"></div>
     </div>
   </section>
@@ -158,13 +172,28 @@
     const wrap = document.getElementById('player-wrap');
     const placeholder = document.getElementById('placeholder');
     const status = document.getElementById('status');
+    const langSelect = document.getElementById('lang-select');
+
+    fetch('/api/languages')
+      .then(r => r.json())
+      .then(langs => {
+        langs.sort((a, b) => a.name.localeCompare(b.name));
+        langs.forEach(({ name, code }) => {
+          const opt = document.createElement('option');
+          opt.value = code;
+          opt.textContent = name;
+          langSelect.appendChild(opt);
+        });
+      });
 
     btn.addEventListener('click', async () => {
       btn.disabled = true;
       status.textContent = 'finding something...';
+      const lang = langSelect.value;
+      const url = lang ? `/api/random?lang=${lang}` : '/api/random';
 
       try {
-        const res = await fetch('/api/random');
+        const res = await fetch(url);
         if (!res.ok) throw new Error('server error');
         const { video_id } = await res.json();
 
