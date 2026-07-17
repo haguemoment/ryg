@@ -198,14 +198,16 @@
         const { video_id } = await res.json();
 
         placeholder.style.display = 'none';
+        const ytUrl = `https://www.youtube.com/watch?v=${video_id}`;
         wrap.innerHTML = `<iframe
+          id="yt-frame"
           src="https://www.youtube.com/embed/${video_id}?autoplay=1"
           allow="autoplay; encrypted-media; fullscreen"
           allowfullscreen>
         </iframe>`;
-        status.textContent = '';
+        status.innerHTML = `<a href="${ytUrl}" target="_blank" style="color:#999">open in YouTube ↗</a>`;
       } catch (e) {
-        status.textContent = 'something went wrong. try again';
+        status.textContent = `error: ${e.message}`;
       } finally {
         btn.disabled = false;
       }
