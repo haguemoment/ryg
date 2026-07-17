@@ -139,9 +139,41 @@
       text-align: center;
     }
 
+    #history {
+      width: 100%;
+      margin-top: 16px;
+      border-top: 1px solid #ddd;
+      padding-top: 10px;
+      max-height: 180px;
+      overflow-y: auto;
+      display: none;
+    }
+
+    #history p {
+      font-size: 0.75rem;
+      color: #aaa;
+      margin-bottom: 6px;
+      letter-spacing: 0.03em;
+    }
+
+    #history a {
+      display: block;
+      font-size: 0.78rem;
+      color: #666;
+      text-decoration: none;
+      padding: 3px 0;
+      border-bottom: 1px solid #eee;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    #history a:hover { color: #222; }
+
     @media (max-width: 560px) {
       #player { flex-direction: column; }
       #btn-wrap { flex-direction: row; min-width: unset; padding: 16px; justify-content: center; }
+      #history { display: none !important; }
     }
   </style>
 </head>
@@ -164,6 +196,7 @@
       <button id="randomize-btn">RANDOMIZE</button>
       <select id="lang-select"><option value="">Language: Any</option></select>
       <div id="status"></div>
+      <div id="history"><p>recent videos</p></div>
     </div>
   </section>
 
@@ -173,6 +206,8 @@
     const placeholder = document.getElementById('placeholder');
     const status = document.getElementById('status');
     const langSelect = document.getElementById('lang-select');
+    const history = document.getElementById('history');
+    let historyCount = 0;
 
     fetch('/api/languages')
       .then(r => r.json())
@@ -206,6 +241,14 @@
           allowfullscreen>
         </iframe>`;
         status.innerHTML = `<a href="${ytUrl}" target="_blank" style="color:#999">open in YouTube ↗</a>`;
+
+        historyCount++;
+        history.style.display = 'block';
+        const link = document.createElement('a');
+        link.href = ytUrl;
+        link.target = '_blank';
+        link.textContent = `${historyCount}. youtube.com/watch?v=${video_id}`;
+        history.appendChild(link);
       } catch (e) {
         status.textContent = `error: ${e.message}`;
       } finally {
