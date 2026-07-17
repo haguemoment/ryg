@@ -120,10 +120,21 @@ REGION_CODES = [
 ]
 
 
-def _youtube_search(query, region_code=None, relevance_language=None):
+def _pick_order():
+    r = random.random()
+    if r < 0.60:
+        return "date"       # newest = fewest views
+    elif r < 0.80:
+        return "relevance"  # medium views
+    else:
+        return "viewCount"  # most viewed
+
+
+def _youtube_search(query, region_code=None, relevance_language=None, order=None):
     params = {
         "part": "snippet", "q": query, "type": "video",
         "maxResults": 5, "videoDuration": "medium", "key": YOUTUBE_API_KEY,
+        "order": order or "relevance",
     }
     if region_code:
         params["regionCode"] = region_code
@@ -157,8 +168,9 @@ def random_language_search(lang_code=None, retries=5):
         if not words:
             continue
         query = " ".join(words)
-        print(f"[language] {lang_name} ({code}) → '{query}'")
-        result = _youtube_search(query, relevance_language=code)
+        order = _pick_order()
+        print(f"[language] {lang_name} ({code}) → '{query}' order={order}")
+        result = _youtube_search(query, relevance_language=code if lang_code else None, order=order)
         if result:
             return result
     return None
