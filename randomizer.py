@@ -133,9 +133,11 @@ def _pick_order():
 def _youtube_search(query, region_code=None, relevance_language=None, order=None):
     params = {
         "part": "snippet", "q": query, "type": "video",
-        "maxResults": 5, "videoDuration": "medium", "key": YOUTUBE_API_KEY,
+        "maxResults": 5, "key": YOUTUBE_API_KEY,
         "order": order or "relevance",
     }
+    if not relevance_language:
+        params["videoDuration"] = "medium"
     if region_code:
         params["regionCode"] = region_code
     if relevance_language:
@@ -155,20 +157,22 @@ def get_supported_languages():
     return [{"name": name, "code": code} for name, code, _ in SUPPORTED_LANGUAGES]
 
 
-def random_language_search(lang_code=None, retries=5):
+def random_language_search(lang_code=None, retries=None):
     """Return a YouTube URL found via random words from a random language."""
+    if retries is None:
+        retries = 5
     pool = SUPPORTED_LANGUAGES
     if lang_code:
         pool = [l for l in SUPPORTED_LANGUAGES if l[1] == lang_code] or SUPPORTED_LANGUAGES
     for _ in range(retries):
         lang = _weighted_choice(pool, lambda l: math.sqrt(max(l[2], 0.1))) if not lang_code else pool[0]
         lang_name, code, _ = lang
-        word_count = random.randint(2, 3)
+        word_count = 1 if lang_code else random.randint(2, 3)
         words = _pick_words(code, word_count)
         if not words:
             continue
         query = " ".join(words)
-        order = _pick_order()
+        order = "relevance" if lang_code else _pick_order()
         print(f"[language] {lang_name} ({code}) → '{query}' order={order}")
         result = _youtube_search(query, relevance_language=code if lang_code else None, order=order)
         if result:
