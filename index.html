@@ -97,10 +97,11 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       gap: 10px;
       padding: 24px;
       min-width: 160px;
+      height: 100%;
     }
 
     #randomize-btn {
@@ -144,8 +145,8 @@
       margin-top: 16px;
       border-top: 1px solid #ddd;
       padding-top: 10px;
-      max-height: 180px;
       overflow-y: auto;
+      flex: 1;
       display: none;
     }
 
@@ -207,7 +208,6 @@
     const status = document.getElementById('status');
     const langSelect = document.getElementById('lang-select');
     const history = document.getElementById('history');
-    let historyCount = 0;
 
     fetch('/api/languages')
       .then(r => r.json())
@@ -242,13 +242,12 @@
         </iframe>`;
         status.innerHTML = `<a href="${ytUrl}" target="_blank" style="color:#999">open in YouTube ↗</a>`;
 
-        historyCount++;
         history.style.display = 'block';
         const link = document.createElement('a');
         link.href = ytUrl;
         link.target = '_blank';
-        link.textContent = `${historyCount}. youtube.com/watch?v=${video_id}`;
-        history.appendChild(link);
+        link.textContent = `youtube.com/watch?v=${video_id}`;
+        history.insertBefore(link, history.firstChild.nextSibling);
       } catch (e) {
         status.textContent = `error: ${e.message}`;
       } finally {
