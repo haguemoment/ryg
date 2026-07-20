@@ -131,24 +131,28 @@ def _pick_order():
 
 
 def _youtube_search(query, region_code=None, relevance_language=None, order=None):
-    params = {
+    base_params = {
         "part": "snippet", "q": query, "type": "video",
         "maxResults": 5, "key": YOUTUBE_API_KEY,
         "order": order or "relevance",
     }
-    if not relevance_language:
-        params["videoDuration"] = "medium"
     if region_code:
-        params["regionCode"] = region_code
+        base_params["regionCode"] = region_code
     if relevance_language:
-        params["relevanceLanguage"] = relevance_language
-    r = requests.get(YOUTUBE_SEARCH_URL, params=params, timeout=10)
-    items = r.json().get("items", [])
-    if not items:
-        return None
-    video = items[min(4, len(items) - 1)]
-    vid_id = video["id"]["videoId"]
-    return f"https://www.youtube.com/watch?v={vid_id}"
+        base_params["relevanceLanguage"] = relevance_language
+
+    # Always try with duration filter first to exclude Shorts
+    for duration in ["medium", None]:
+        params = dict(base_params)
+        if duration:
+            params["videoDuration"] = duration
+        r = requests.get(YOUTUBE_SEARCH_URL, params=params, timeout=10)
+        items = r.json().get("items", [])
+        if items:
+            video = items[min(4, len(items) - 1)]
+            vid_id = video["id"]["videoId"]
+            return f"https://www.youtube.com/watch?v={vid_id}"
+    return None
 
 
 # ── Public API ────────────────────────────────────────────────────────────────
