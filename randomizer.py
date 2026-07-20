@@ -161,26 +161,56 @@ def get_supported_languages():
     return [{"name": name, "code": code} for name, code, _ in SUPPORTED_LANGUAGES]
 
 
-def random_language_search(lang_code=None, retries=None):
+def random_language_search(lang_code=None):
     """Return a YouTube URL found via random words from a random language."""
-    if retries is None:
-        retries = 5
     pool = SUPPORTED_LANGUAGES
     if lang_code:
         pool = [l for l in SUPPORTED_LANGUAGES if l[1] == lang_code] or SUPPORTED_LANGUAGES
-    for _ in range(retries):
+
+    def _attempt(word_count):
         lang = _weighted_choice(pool, lambda l: math.sqrt(max(l[2], 0.1))) if not lang_code else pool[0]
         lang_name, code, _ = lang
-        word_count = 1 if lang_code else random.randint(2, 3)
         words = _pick_words(code, word_count)
+        if not words:
+            return None
+        query = " ".join(words)
+        order = "relevance" if lang_code else _pick_order()
+        print(f"[language] {lang_name} ({code}) → '{query}' order={order}")
+        return _youtube_search(query, relevance_language=code if lang_code else None, order=order)
+
+    # Tier 1: 10 tries with 2-3 word phrases
+    for _ in range(10):
+        result = _attempt(random.randint(2, 3))
+        if result:
+            return result
+
+    # Tier 2: 5 tries with 1 word
+    for _ in range(5):
+        result = _attempt(1)
+        if result:
+            return result
+
+    # Tier 3: 5 tries with 1 word, no duration filter (allow Shorts as last resort)
+    pool_lang = pool[0][1] if lang_code else None
+    for _ in range(5):
+        lang = _weighted_choice(pool, lambda l: math.sqrt(max(l[2], 0.1))) if not lang_code else pool[0]
+        lang_name, code, _ = lang
+        words = _pick_words(code, 1)
         if not words:
             continue
         query = " ".join(words)
         order = "relevance" if lang_code else _pick_order()
-        print(f"[language] {lang_name} ({code}) → '{query}' order={order}")
-        result = _youtube_search(query, relevance_language=code if lang_code else None, order=order)
-        if result:
-            return result
+        print(f"[language] {lang_name} ({code}) → '{query}' order={order} [no duration filter]")
+        r = requests.get(YOUTUBE_SEARCH_URL, params={
+            "part": "snippet", "q": query, "type": "video",
+            "maxResults": 5, "key": YOUTUBE_API_KEY, "order": order,
+            **({"relevanceLanguage": code} if lang_code else {}),
+        }, timeout=10)
+        items = r.json().get("items", [])
+        if items:
+            vid_id = items[min(4, len(items) - 1)]["id"]["videoId"]
+            return f"https://www.youtube.com/watch?v={vid_id}"
+
     return None
 
 
