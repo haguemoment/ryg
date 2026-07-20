@@ -130,6 +130,10 @@ def _pick_order():
         return "viewCount"  # most viewed
 
 
+class QuotaExceededError(Exception):
+    pass
+
+
 def _youtube_search(query, region_code=None, relevance_language=None, order=None):
     base_params = {
         "part": "snippet", "q": query, "type": "video",
@@ -147,7 +151,12 @@ def _youtube_search(query, region_code=None, relevance_language=None, order=None
         if duration:
             params["videoDuration"] = duration
         r = requests.get(YOUTUBE_SEARCH_URL, params=params, timeout=10)
-        items = r.json().get("items", [])
+        data = r.json()
+        if r.status_code == 403:
+            errors = data.get("error", {}).get("errors", [])
+            if any(e.get("reason") == "quotaExceeded" for e in errors):
+                raise QuotaExceededError()
+        items = data.get("items", [])
         if items:
             video = items[min(4, len(items) - 1)]
             vid_id = video["id"]["videoId"]

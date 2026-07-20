@@ -2,7 +2,7 @@ import os
 import random
 import requests
 from flask import Flask, jsonify, render_template, request
-from randomizer import random_language_search, random_filename_search, get_supported_languages, YOUTUBE_API_KEY, YOUTUBE_SEARCH_URL
+from randomizer import random_language_search, random_filename_search, get_supported_languages, QuotaExceededError, YOUTUBE_API_KEY, YOUTUBE_SEARCH_URL
 
 app = Flask(__name__, template_folder='.')
 
@@ -51,6 +51,8 @@ def get_random_video():
 
         video_id = url.split("v=")[1]
         return jsonify({"video_id": video_id, "method": method})
+    except QuotaExceededError:
+        return jsonify({"error": "quota_exceeded"}), 429
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

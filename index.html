@@ -208,6 +208,7 @@
     const status = document.getElementById('status');
     const langSelect = document.getElementById('lang-select');
     const history = document.getElementById('history');
+    let quotaErrors = 0;
 
     fetch('/api/languages')
       .then(r => r.json())
@@ -229,6 +230,16 @@
 
       try {
         const res = await fetch(url);
+        if (res.status === 429) {
+          quotaErrors++;
+          if (quotaErrors >= 5) {
+            status.textContent = 'API quota reached for today — resets at midnight ET.';
+          } else {
+            status.textContent = 'quota error. try again shortly.';
+          }
+          btn.disabled = false;
+          return;
+        }
         if (!res.ok) throw new Error('server error');
         const { video_id } = await res.json();
 
