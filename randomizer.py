@@ -187,21 +187,21 @@ def random_language_search(lang_code=None):
         print(f"[language] {lang_name} ({code}) → '{query}' order={order}")
         return _youtube_search(query, relevance_language=code if lang_code else None, order=order)
 
-    # Tier 1: 10 tries with 2-3 word phrases
-    for _ in range(10):
+    # Tier 1: 4 tries with 2-3 word phrases
+    for _ in range(4):
         result = _attempt(random.randint(2, 3))
         if result:
             return result
 
-    # Tier 2: 5 tries with 1 word
-    for _ in range(5):
+    # Tier 2: 4 tries with 1 word
+    for _ in range(4):
         result = _attempt(1)
         if result:
             return result
 
-    # Tier 3: 5 tries with 1 word, no duration filter (allow Shorts as last resort)
+    # Tier 3: 4 tries with 1 word, no duration filter (allow Shorts as last resort)
     pool_lang = pool[0][1] if lang_code else None
-    for _ in range(5):
+    for _ in range(4):
         lang = _weighted_choice(pool, lambda l: math.sqrt(max(l[2], 0.1))) if not lang_code else pool[0]
         lang_name, code, _ = lang
         words = _pick_words(code, 1)
@@ -223,7 +223,7 @@ def random_language_search(lang_code=None):
     return None
 
 
-def random_filename_search(lang_code=None, retries=5):
+def random_filename_search(lang_code=None, retries=4):
     """Return a YouTube URL found via a random default camera filename."""
     prefixes = ["IMG", "MOV", "VID", "DSC", "MVI", "CLIP", "FILE"]
     for _ in range(retries):

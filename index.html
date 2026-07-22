@@ -133,6 +133,13 @@
       cursor: pointer;
     }
 
+    #lang-disclaimer {
+      font-size: 0.7rem;
+      color: #999;
+      line-height: 1.5;
+      font-style: italic;
+    }
+
     #status {
       font-size: 0.78rem;
       color: #999;
@@ -196,6 +203,7 @@
     <div id="btn-wrap">
       <button id="randomize-btn">RANDOMIZE</button>
       <select id="lang-select"><option value="">Language: Any</option></select>
+      <p id="lang-disclaimer">Language filtering uses word queries + a relevance hint. YouTube doesn't let you filter search results by language directly, so results won't always match perfectly.</p>
       <div id="status"></div>
       <div id="history"><p>recent videos</p></div>
     </div>
@@ -251,7 +259,7 @@
           allow="autoplay; encrypted-media; fullscreen"
           allowfullscreen>
         </iframe>`;
-        status.innerHTML = `<a href="${ytUrl}" target="_blank" style="color:#999">open in YouTube ↗</a>`;
+        status.textContent = '';
 
         history.style.display = 'block';
         const link = document.createElement('a');
