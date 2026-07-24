@@ -213,9 +213,9 @@
     const btn = document.getElementById('randomize-btn');
     const wrap = document.getElementById('player-wrap');
     const placeholder = document.getElementById('placeholder');
-    const status = document.getElementById('status');
+    const statusEl = document.getElementById('status');
     const langSelect = document.getElementById('lang-select');
-    const history = document.getElementById('history');
+    const historyEl = document.getElementById('history');
     let quotaErrors = 0;
 
     fetch('/api/languages')
@@ -232,7 +232,7 @@
 
     btn.addEventListener('click', async () => {
       btn.disabled = true;
-      status.textContent = 'finding something...';
+      statusEl.textContent = 'finding something...';
       const lang = langSelect.value;
       const url = lang ? `/api/random?lang=${lang}` : '/api/random';
 
@@ -241,9 +241,9 @@
         if (res.status === 429) {
           quotaErrors++;
           if (quotaErrors >= 5) {
-            status.textContent = 'API quota reached for today — resets at midnight ET.';
+            statusEl.textContent = 'API quota reached for today — resets at midnight ET.';
           } else {
-            status.textContent = 'quota error. try again shortly.';
+            statusEl.textContent = 'quota error. try again shortly.';
           }
           btn.disabled = false;
           return;
@@ -259,16 +259,16 @@
           allow="autoplay; encrypted-media; fullscreen"
           allowfullscreen>
         </iframe>`;
-        status.textContent = '';
+        statusEl.textContent = '';
 
-        history.style.display = 'block';
+        historyEl.style.display = 'block';
         const link = document.createElement('a');
         link.href = ytUrl;
         link.target = '_blank';
         link.textContent = `youtube.com/watch?v=${video_id}`;
-        history.insertBefore(link, history.firstChild.nextSibling);
+        historyEl.insertBefore(link, historyEl.firstChild.nextSibling);
       } catch (e) {
-        status.textContent = `error: ${e.message}`;
+        statusEl.textContent = `error: ${e.message}`;
       } finally {
         btn.disabled = false;
       }
