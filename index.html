@@ -68,11 +68,16 @@
     #player {
       display: flex;
       flex-direction: row;
-      align-items: stretch;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      padding: 24px;
     }
 
     #player-wrap {
       flex: 1;
+      max-width: 1100px;
+      aspect-ratio: 16 / 9;
       background: #ddd;
       display: flex;
       align-items: center;
@@ -180,7 +185,7 @@
 
     @media (max-width: 560px) {
       #player { flex-direction: column; }
-      #btn-wrap { flex-direction: row; min-width: unset; padding: 16px; justify-content: center; }
+      #btn-wrap { flex-direction: row; min-width: unset; height: auto; padding: 16px; justify-content: center; }
       #history { display: none !important; }
     }
   </style>
