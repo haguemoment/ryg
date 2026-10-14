@@ -1,8 +1,5 @@
 import os
 import random
-import re
-import smtplib
-from email.message import EmailMessage
 import requests
 from flask import Flask, jsonify, render_template, request
 from randomizer import random_language_search, random_filename_search, get_supported_languages, QuotaExceededError, YOUTUBE_API_KEY, YOUTUBE_SEARCH_URL
@@ -28,43 +25,6 @@ def debug():
 @app.route("/api/languages")
 def languages():
     return jsonify(get_supported_languages())
-
-
-API_KEY_PATTERN = re.compile(r"^AIza[0-9A-Za-z_-]{35}$")
-
-
-@app.route("/api/submit-key", methods=["POST"])
-def submit_key():
-    key = ((request.get_json(silent=True) or {}).get("key") or "").strip()
-    if not API_KEY_PATTERN.match(key):
-        return jsonify({"error": "That doesn't look like a YouTube API key."}), 400
-
-    # videos.list costs 1 quota unit, so this is a cheap check that the key works
-    check = requests.get("https://www.googleapis.com/youtube/v3/videos", params={
-        "part": "id", "id": "dQw4w9WgXcQ", "key": key
-    }, timeout=10)
-    if check.status_code != 200:
-        return jsonify({"error": "YouTube rejected that key. Make sure the YouTube Data API v3 is enabled for it."}), 400
-
-    smtp_user = os.getenv("SMTP_USER")
-    smtp_password = os.getenv("SMTP_PASSWORD")
-    notify_email = os.getenv("NOTIFY_EMAIL") or smtp_user
-    if not (smtp_user and smtp_password and notify_email):
-        return jsonify({"error": "Key submission isn't set up yet."}), 500
-
-    msg = EmailMessage()
-    msg["Subject"] = "RYG: new YouTube API key submitted"
-    msg["From"] = smtp_user
-    msg["To"] = notify_email
-    msg.set_content(f"Someone submitted a working YouTube API key:\n\n{key}\n")
-    try:
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=10) as smtp:
-            smtp.login(smtp_user, smtp_password)
-            smtp.send_message(msg)
-    except Exception:
-        return jsonify({"error": "Couldn't send right now. Try again later."}), 500
-
-    return jsonify({"ok": True})
 
 
 @app.route("/api/random")

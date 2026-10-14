@@ -226,13 +226,15 @@
     #about {
       height: auto;
       min-height: 100vh;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 48px;
-      padding: 72px 6vw;
-      max-width: 1400px;
+      padding: 72px 24px;
+      max-width: 820px;
       margin: 0 auto;
-      align-items: start;
+    }
+
+    #about hr {
+      border: none;
+      border-top: 1px solid #ddd;
+      margin: 56px 0;
     }
 
     #about h2 {
@@ -240,8 +242,6 @@
       font-weight: normal;
       letter-spacing: 0.06em;
       margin-bottom: 18px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid #ddd;
     }
 
     #about h3 {
@@ -280,47 +280,25 @@
       color: #777;
     }
 
-    #key-form {
+    #artist {
       display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-top: 8px;
+      gap: 32px;
+      align-items: flex-start;
     }
 
-    #key-input {
-      padding: 8px 10px;
-      font-size: 0.85rem;
-      font-family: monospace;
-      background: #fff;
-      color: #222;
-      border: 1px solid #ccc;
+    #artist img {
+      width: 260px;
+      max-width: 100%;
+      aspect-ratio: 990 / 1216;
+      object-fit: cover;
       border-radius: 2px;
+      flex-shrink: 0;
     }
 
-    #key-submit {
-      align-self: flex-start;
-      padding: 8px 18px;
-      font-size: 0.8rem;
-      letter-spacing: 0.1em;
-      background: #222;
-      color: #f5f5f0;
-      border: none;
-      border-radius: 2px;
-      cursor: pointer;
-      font-family: 'Georgia', serif;
-    }
-
-    #key-submit:hover { background: #444; }
-    #key-submit:disabled { background: #bbb; cursor: default; }
-
-    #key-status {
-      font-size: 0.78rem;
-      color: #999;
-      min-height: 1.2em;
-    }
-
-    @media (max-width: 900px) {
-      #about { grid-template-columns: 1fr; gap: 40px; padding: 48px 24px; }
+    @media (max-width: 640px) {
+      #about { padding: 48px 16px; }
+      #about hr { margin: 40px 0; }
+      #artist { flex-direction: column; }
     }
 
     @media (max-width: 560px) {
@@ -361,11 +339,6 @@
 
   <section id="about">
     <div>
-      <h2>Artist statement</h2>
-      <p>The internet was built to connect people. Algorithmically generated content has walled off these connections. The troubling thing about popular narratives via content addictions plaguing our world, more than anything, is that they’re completely artificial. They are selected and crafted by the people showing us content, and the actual world of content produced is much wider and stranger than this. I hope that in the future the online tools we have better enable discovery and reflect the entropy of real life. RYG is one attempt at that.</p>
-    </div>
-
-    <div>
       <h2>How does it work?</h2>
       <p>Random Youtube Generator was created through an iterative process. The first attempt to create legitimately random videos was through guessing random hashes that appear at the end of a YouTube link and are indexed to a random video:</p>
       <p>e.g. <code>https://www.youtube.com/watch?v=9RcrnvMK7p8</code></p>
@@ -392,6 +365,8 @@
       <p>This ensures videos that feel random, that break down the walls that control what content reaches us to see that most of humanity is simple and beautiful.</p>
     </div>
 
+    <hr />
+
     <div>
       <h2>FAQs</h2>
       <h3>What are your favorite kinds of results?</h3>
@@ -406,12 +381,17 @@
       <h3>How can I support?</h3>
       <p>RYG runs on a YouTube API with a limited number of calls that limits its daily usage at 100 videos. If you’re reading this because it stopped working and you want more random videos, go to this link:</p>
       <p><a href="https://console.cloud.google.com/apis/library/youtube.googleapis.com" target="_blank" rel="noopener">https://console.cloud.google.com/apis/library/youtube.googleapis.com</a></p>
-      <p>and make a YouTube API key with your gmail account, then paste it in the box below! I add new API keys to the environment within a day or so of receiving them.</p>
-      <form id="key-form">
-        <input id="key-input" type="text" placeholder="paste your API key (AIza...)" autocomplete="off" spellcheck="false" required />
-        <button id="key-submit" type="submit">SUBMIT KEY</button>
-        <div id="key-status"></div>
-      </form>
+      <p>and make a YouTube API key with your gmail account, then send it to sarahjhager1 [at] gmail.com! I add new API keys to the environment within a day or so of receiving them.</p>
+    </div>
+
+    <hr />
+
+    <div>
+      <h2>About the artist</h2>
+      <div id="artist">
+        <img src="/static/artist.jpg" alt="Sarah Jane Hager on a Brooklyn rooftop at sunset, wearing a trucker hat and holding a phone" />
+        <p>Random Youtube Generator was made by Sarah Jane Hager, a creative technologist living in Brooklyn, NY. She enjoys ambient music and biking and reading and cartoons and has strong opinions on the representation of aliens in media. Her substack is here: <a href="https://substack.com/@haguemoment" target="_blank" rel="noopener">https://substack.com/@haguemoment</a>, and you can reach her via email at sarahjhager1 [at] gmail.com</p>
+      </div>
     </div>
   </section>
 
@@ -508,32 +488,6 @@
     }
 
     btn.addEventListener('click', loadRandom);
-
-    const keyForm = document.getElementById('key-form');
-    const keyInput = document.getElementById('key-input');
-    const keySubmit = document.getElementById('key-submit');
-    const keyStatus = document.getElementById('key-status');
-
-    keyForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      keySubmit.disabled = true;
-      keyStatus.textContent = 'checking key...';
-      try {
-        const res = await fetch('/api/submit-key', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ key: keyInput.value }),
-        });
-        const data = await res.json().catch(() => ({}));
-        if (!res.ok) throw new Error(data.error || 'something went wrong');
-        keyInput.value = '';
-        keyStatus.textContent = 'thank you! key received.';
-      } catch (err) {
-        keyStatus.textContent = err.message;
-      } finally {
-        keySubmit.disabled = false;
-      }
-    });
   </script>
 
 </body>
