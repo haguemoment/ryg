@@ -222,6 +222,107 @@
 
     #history a:hover { color: #222; }
 
+    /* ── About ── */
+    #about {
+      height: auto;
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 48px;
+      padding: 72px 6vw;
+      max-width: 1400px;
+      margin: 0 auto;
+      align-items: start;
+    }
+
+    #about h2 {
+      font-size: 1.2rem;
+      font-weight: normal;
+      letter-spacing: 0.06em;
+      margin-bottom: 18px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    #about h3 {
+      font-size: 0.95rem;
+      font-weight: normal;
+      font-style: italic;
+      color: #444;
+      margin: 22px 0 8px;
+    }
+
+    #about h3:first-of-type { margin-top: 0; }
+
+    #about p, #about li {
+      font-size: 0.88rem;
+      color: #555;
+      line-height: 1.75;
+    }
+
+    #about p { margin-bottom: 12px; }
+
+    #about ol, #about ul {
+      padding-left: 20px;
+      margin-bottom: 12px;
+    }
+
+    #about li { margin-bottom: 6px; }
+
+    #about a {
+      color: #444;
+      word-break: break-all;
+    }
+
+    #about code {
+      font-size: 0.8rem;
+      word-break: break-all;
+      color: #777;
+    }
+
+    #key-form {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    #key-input {
+      padding: 8px 10px;
+      font-size: 0.85rem;
+      font-family: monospace;
+      background: #fff;
+      color: #222;
+      border: 1px solid #ccc;
+      border-radius: 2px;
+    }
+
+    #key-submit {
+      align-self: flex-start;
+      padding: 8px 18px;
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      background: #222;
+      color: #f5f5f0;
+      border: none;
+      border-radius: 2px;
+      cursor: pointer;
+      font-family: 'Georgia', serif;
+    }
+
+    #key-submit:hover { background: #444; }
+    #key-submit:disabled { background: #bbb; cursor: default; }
+
+    #key-status {
+      font-size: 0.78rem;
+      color: #999;
+      min-height: 1.2em;
+    }
+
+    @media (max-width: 900px) {
+      #about { grid-template-columns: 1fr; gap: 40px; padding: 48px 24px; }
+    }
+
     @media (max-width: 560px) {
       #player { flex-direction: column; }
       #btn-wrap { flex-direction: row; min-width: unset; height: auto; padding: 16px; justify-content: center; }
@@ -255,6 +356,62 @@
       <p id="lang-disclaimer">Language filtering uses word queries + a relevance hint. YouTube doesn't let you filter search results by language directly, so results won't always match perfectly.</p>
       <div id="status"></div>
       <div id="history"><p>recent videos</p></div>
+    </div>
+  </section>
+
+  <section id="about">
+    <div>
+      <h2>Artist statement</h2>
+      <p>The internet was built to connect people. Algorithmically generated content has walled off these connections. The troubling thing about popular narratives via content addictions plaguing our world, more than anything, is that they’re completely artificial. They are selected and crafted by the people showing us content, and the actual world of content produced is much wider and stranger than this. I hope that in the future the online tools we have better enable discovery and reflect the entropy of real life. RYG is one attempt at that.</p>
+    </div>
+
+    <div>
+      <h2>How does it work?</h2>
+      <p>Random Youtube Generator was created through an iterative process. The first attempt to create legitimately random videos was through guessing random hashes that appear at the end of a YouTube link and are indexed to a random video:</p>
+      <p>e.g. <code>https://www.youtube.com/watch?v=9RcrnvMK7p8</code></p>
+      <p>Unfortunately, there are far too many of these hashes to have a chance at guessing any one in particular without getting kicked off Youtube’s servers. So instead, I aimed to create a generator whose videos felt random.</p>
+      <p>There are two randomization algorithms that power Random Youtube Generator:</p>
+
+      <h3>75% of the time: Random language and word search</h3>
+      <ol>
+        <li>39 of the world’s most commonly spoken languages are weighted by the square root of their population, with a minimum value applied to the least common languages in the list so that they still appear sometimes.</li>
+        <li>A language is selected from this list, and then a few words are randomly selected from that language’s dictionary, weighted by the square root of how common that word is in that language in cases where this data is easily available. If not, 2-3 completely random words are selected.</li>
+        <li>Results are sorted by newest 60% of the time, relevance 20% of the time, and most viewed 20% of the time. When a language is selected from the drop down menu, it always sorts by relevance and asks Youtube to prefer results in that language. However, YouTube doesn’t allow pure filtering by language, and this preference is only a hint, so language filtering is only somewhat effective.</li>
+        <li>The algorithm selects the 5th result provided there are &gt;= 5 results, else picks the lowest result.</li>
+        <li>Searches also filter videos by length, only selecting videos between 4 and 20 minutes long. This is to eliminate slop, as most YouTube shorts are low quality.</li>
+        <li>Algorithm has up to 4 retries with 2-3 word searches, then 4 retries with just one word, then 4 more that have no time filter on results. Any search that comes back empty is also retried once without the time filter. This is mostly helpful for less commonly spoken languages.</li>
+      </ol>
+
+      <h3>25% of the time: Camera filename search</h3>
+      <ul>
+        <li>Searches for default camera file names such as IMG_0421 or DSC_1101</li>
+        <li>Each search is tied to a random country (of 48 supported countries)</li>
+        <li>Plays the 5th result (or bottom result if results &lt;5) or makes up to 4 retries.</li>
+      </ul>
+
+      <p>This ensures videos that feel random, that break down the walls that control what content reaches us to see that most of humanity is simple and beautiful.</p>
+    </div>
+
+    <div>
+      <h2>FAQs</h2>
+      <h3>What are your favorite kinds of results?</h3>
+      <p>I love seeing a random high school play in the Philippines, for example, or a Romanian after dinner accordion show on a porch while some kids play on the swings. Those videos where you feel like you’re in a room you don’t belong in. I like seeing the different things people celebrate or feel the need to capture. It reminds me how much of our lives we spend unpolished in strange community, and that the world is mostly full of people that just eat and love.</p>
+
+      <h3>Have you ever gotten a video that was super sus?</h3>
+      <p>Yeah one time it took me to a video that had a terrorism warning on it. I watched 2 seconds on it and then realized that I didn’t want to see anything truly horrifying or end up on some sort of list.</p>
+
+      <h3>What are your other projects?</h3>
+      <p>Right now, mostly writing, but I want to keep creating. Subscribe to my <a href="https://substack.com/@haguemoment" target="_blank" rel="noopener">substack</a> or reach out if you want to connect!</p>
+
+      <h3>How can I support?</h3>
+      <p>RYG runs on a YouTube API with a limited number of calls that limits its daily usage at 100 videos. If you’re reading this because it stopped working and you want more random videos, go to this link:</p>
+      <p><a href="https://console.cloud.google.com/apis/library/youtube.googleapis.com" target="_blank" rel="noopener">https://console.cloud.google.com/apis/library/youtube.googleapis.com</a></p>
+      <p>and make a YouTube API key with your gmail account, then paste it in the box below! I add new API keys to the environment within a day or so of receiving them.</p>
+      <form id="key-form">
+        <input id="key-input" type="text" placeholder="paste your API key (AIza...)" autocomplete="off" spellcheck="false" required />
+        <button id="key-submit" type="submit">SUBMIT KEY</button>
+        <div id="key-status"></div>
+      </form>
     </div>
   </section>
 
@@ -351,6 +508,32 @@
     }
 
     btn.addEventListener('click', loadRandom);
+
+    const keyForm = document.getElementById('key-form');
+    const keyInput = document.getElementById('key-input');
+    const keySubmit = document.getElementById('key-submit');
+    const keyStatus = document.getElementById('key-status');
+
+    keyForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      keySubmit.disabled = true;
+      keyStatus.textContent = 'checking key...';
+      try {
+        const res = await fetch('/api/submit-key', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ key: keyInput.value }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || 'something went wrong');
+        keyInput.value = '';
+        keyStatus.textContent = 'thank you! key received.';
+      } catch (err) {
+        keyStatus.textContent = err.message;
+      } finally {
+        keySubmit.disabled = false;
+      }
+    });
   </script>
 
 </body>
